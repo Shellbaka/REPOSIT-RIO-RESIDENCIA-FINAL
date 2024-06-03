@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Sans+Serif+Collection&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=SansSerifBldFLF&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=SansSerifBookFLF&display=swap" rel="stylesheet" />
+    <link rel="icon" href="/src/logo-menor.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=SansSerifBldFLF-Italic&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href="/css/formulario(ferias).css" rel="stylesheet" />
+    <title>Accenture | Solicitação de férias </title>
+    <style>
+       
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="imagemlogo">
+            <a href="/html/menu.html"> <img src="/src/accenture-logo.png" alt="Logo da Accenture" width="60" height="30"> 
+        </div>
+        <div class="header">
+            <ul class="meio"> 
+                <li><a href="services.html">Serviços</a></li>
+                <li><a href="about-us.html">Sobre nós</a></li>
+                <li><a href="contatos.html">Contatos</a></li>
+            </ul>
+            <ul class="icons"> 
+                <li><a href="#"><img src="/src/user.svg" alt="Menu" > </a>
+                <li><a href="#"><img src="/src/menu.svg" alt="Menu" > </a>
+            </ul>
+        </div>
+
+        <!-- SOLICITAÇÃO DE FERIAS - CASO SIM -->
+        <div class="etapa" id="etapa1" style="display: none;">
+            <div class="login-container">
+                <h3 class="login-title">Olá, <span id="nomeFuncionario"></span>!</h3>
+                <div id="mensagem">
+                    <h3 class="login-title2-yes">Você já pode solicitar suas férias, vamos lá??</h3>
+                    <p class="subtitle-yes">Estamos ansiosos para ajudá-lo(a) a planejar suas merecidas <br> férias. Prossiga para iniciar sua solicitação de férias.</p>
+                </div>
+                <button type="button" class="button-prosseguir" onclick="proximo()">PROSSEGUIR</button>
+            </div>
+        </div>
+
+        <!-- SOLICITAÇÃO DE FERIAS - CASO NÃO -->
+        <div class="etapa" id="etapa1-no" style="display: none;">
+            <div class="login-container">
+                <h3 class="login-title">Olá, <span id="nomeFuncionario"></span>!</h3>
+                <div id="mensagem">
+                    <h3 class="login-title2">Você ainda não pode solicitar suas férias!!</h3>
+                    <p class="subtitle2">Que pena, você ainda não tem o tempo de contribuição exigida <br> para solicitar as férias...</p>
+                </div>
+                <a class="saiba-mais" href="">Saiba mais...</a>
+                <a class="Voltarmenu" href="/html/menu.html">VOLTAR AO MENU</a>
+            </div>
+        </div>
+
+        <!-- SOLICITAÇÃO DE FERIAS - CASO SIM (ESCOLHER O PERIODO DE FERIAS)-->
+        <div class="etapa" id="etapa2" style="display: none;">
+            <div class="periodo-container">
+                <h2 class="login-title">Qual o período de férias?</h2>
+                <h3 class="login-subtitulo">Agora escolha entre essas opções, o período de férias.</h3>
+                <button type="button" class="periodo-button" onclick="selecionarPeriodo(5)">5 DIAS</button>
+                <button type="button" class="periodo-button" onclick="selecionarPeriodo(10)">10 DIAS</button>
+                <button type="button" class="periodo-button" onclick="selecionarPeriodo(20)">20 DIAS</button>
+                <button type="button" class="login-button" onclick="proximo()">PROSSEGUIR</button>
+            </div>
+        </div>
+
+        <!-- SOLICITAÇÃO DE FERIAS - CASO SIM (SELECIONAR A DATA)  -->
+        <div class="etapa" id="etapa3" style="display: none;">
+            <div class="calendario-container">
+                <h2 class="calendario-title">Selecione o período de férias:</h2>
+                <h3 class="calendario-subtitulo">Por favor, selecione a data de início e <br> a data de término das suas férias.</h3>
+                <div class="calendario">
+                    <label for="dataInicio">Data de Início:</label>
+                    <input type="text" id="dataInicio" name="dataInicio" class="form-input" required>
+                    <label for="dataTermino">Data de Término:</label>
+                    <input type="text" id="dataTermino" name="dataTermino" class="form-input" required>
+                </div>
+                <div class="botoes-container">
+                    <button type="button" class="confirmacao-button" onclick="anterior()">VOLTAR</button>
+                    <button type="button" class="confirmacao-button" id="prosseguirEtapa3"onclick="validarDatas()">PROSSEGUIR</button>
+                </div>
+            </div>
+        </div>
+        <!-- Funções JavaScript -->
+        <script>
+flatpickr("#dataInicio", {
+    minDate: "today",
+    dateFormat: "d/m/Y",
+    onClose: function(selectedDates) {
+        flatpickr("#dataTermino", {
+            minDate: selectedDates[0] || "today",
+            dateFormat: "d/m/Y",
+            onClose: verificarCampos
+        });
+    }
+});
+
+flatpickr("#dataTermino", {
+    minDate: "today",
+    dateFormat: "d/m/Y",
+    onClose: verificarCampos
+});
+
+var dataInicioObj = new Date();
+var dataTerminooObj = new Date();
+const antecData = new Date();
+antecData.setDate(antecData.getDate() + 45); 
+
+function verificarCampos() {
+    var dataInicio = document.getElementById('dataInicio').value;
+    var dataTermino = document.getElementById('dataTermino').value;
+    var btnProsseguir3 = document.getElementById('prosseguirEtapa3');
+
+    var partesDataInicio = dataInicio.split('/');
+    var partesDataTermino = dataTermino.split('/');
+
+
+    dataInicioObj = new Date(partesDataInicio[2], partesDataInicio[1] - 1, partesDataInicio[0]);
+    dataTerminoObj = new Date(partesDataTermino[2], partesDataTermino[1] - 1, partesDataTermino[0]);
+    
+    if (dataInicio && dataTermino) {
+        if ((antecData.getTime() > dataInicioObj.getTime() && antecData.getTime() > dataTerminooObj.getTime()) || (antecData.getTime() > dataInicioObj.getTime())){
+            alert("O período de férias deve começar 45 dias após o dia de hoje");
+            btnProsseguir3.disabled = true;
+            return false;
+
+        } else {
+            var diffPeriodo = Math.abs(dataTerminoObj.getTime() - dataInicioObj.getTime());
+            if (diffPeriodo > diasLimite){
+                btnProsseguir3.disabled = true;
+                alert("Período de férias maior que o esperado, selecione corretamente as datas ou altere o período de férias.");
+                return false;
+            } else if (diffPeriodo < diasLimite) {
+                btnProsseguir3.disabled = true;
+                alert("Período de férias menor que o esperado, selecione corretamente as datas ou altere o período de férias");
+                return false;
+            } else {
+                btnProsseguir3.disabled = false;
+            }
+        }
+    } else {
+        btnProsseguir3.disabled = true;
+    }
+    return false;
+}
+
+var dataInicioGlobal = '';
+var dataTerminoGlobal = '';
+
+function validarDatas() {
+    var dataInicio = document.getElementById('dataInicio').value;
+    var dataTermino = document.getElementById('dataTermino').value;
+    var btnProsseguir3 = document.getElementById('prosseguirEtapa3');
+
+    if (!dataInicio || !dataTermino) {
+        alert("Por favor, selecione ambas as datas.");
+        return false;
+    }
+
+
+    if (dataInicio && dataTermino) {
+        if ((antecData.getTime() > dataInicioObj.getTime() && antecData.getTime() > dataTerminooObj.getTime()) || (antecData.getTime() > dataInicioObj.getTime())){
+            alert("O período de férias deve começar 45 dias após o dia de hoje");
+            return false;
+        } else {
+            var diffPeriodo = Math.abs(dataTerminoObj.getTime() - dataInicioObj.getTime());
+            if (diffPeriodo > diasLimite){
+                btnProsseguir3.disabled = true;
+                alert("Período de férias maior que o esperado, selecione corretamente as datas ou altere o período de férias.");
+                return false;
+            } else if (diffPeriodo < diasLimite) {
+                btnProsseguir3.disabled = true;
+                alert("Período de férias menor que o esperado, selecione corretamente as datas ou altere o período de férias");
+                return false;
+            } else {
+                btnProsseguir3.disabled = false;
+            }
+        }
+    } else {
+        btnProsseguir3.disabled = true;
+    }
+
+    dataInicioGlobal = dataInicio;
+    dataTerminoGlobal = dataTermino;
+    
+    if (dataTerminoObj <= dataInicioObj) {
+        alert("A data de término deve ser posterior à data de início.");
+        return false;
+    }
+    proximo();
+    return false; 
+}
+
+var periodoSelecionado = ''; 
+
+var diasLimite = new Date(); 
+
+
+
+function selecionarPeriodo(periodo) {
+    diasLimite = new Date(periodo * 24 * 60 * 60 * 1000);
+    periodoSelecionado = periodo + ' DIAS';
+    atualizaBotaoProsseguir();
+    console.log('Período selecionado: ' + periodoSelecionado); 
+}
+
+function confirmarSelecaoPeriodo() {
+    if (!periodoSelecionado) {
+        alert('Por favor, selecione um período para prosseguir.');
+        return false; 
+    } 
+    return true; 
+}
+
+
+function preencherDadosConfirmacao() {
+    document.getElementById('dataFerias').innerText = dataInicioGlobal + ' a ' + dataTerminoGlobal;
+    document.getElementById('periodoFerias').innerText = periodoSelecionado;
+}
+
+
+function preencherMensagemFinal() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    console.log(currentUser);
+    if (currentUser) {
+        document.getElementById('nomeFuncionarioE5').innerText = currentUser.name + ' ' + currentUser.lastname;
+    }
+    
+}
+
+
+var etapaAtual = 1;
+var etapas = document.getElementsByClassName('etapa');
+
+function mostrarEtapa(etapa) {
+    for (var i = 0; i < etapas.length; i++) {
+        etapas[i].style.display = 'none';
+    }
+    document.getElementById('etapa' + etapa).style.display = 'block';
+
+    
+    if (etapa === 4) {
+        preencherDadosConfirmacao();
+    }
+    
+    if (etapa === 5) {
+        preencherMensagemFinal();
+    }
+}
+
+function anterior() {
+    if (etapaAtual > 1) {
+        etapaAtual--;
+        mostrarEtapa(etapaAtual);
+    }
+}
+
+function proximo() {
+    if (etapaAtual === 2) {
+        var podeProsseguir = confirmarSelecaoPeriodo();
+        if (!podeProsseguir) return; 
+    }
+    if (etapaAtual < etapas.length) {
+        etapaAtual++;
+        mostrarEtapa(etapaAtual);
+    }
+}
+
+
+mostrarEtapa(etapaAtual);
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (currentUser) {
+        
+        document.getElementById('nomeFuncionario').innerText = currentUser.name + ' ' + currentUser.lastname;
+        document.getElementById('nomeFuncionarioE4').value = currentUser.name + ' ' + currentUser.lastname;
+        
+        document.getElementById('matriculaFuncionario').value = currentUser.matricula;
+    } else {
+        alert('Erro: Não foi possível carregar os dados do usuário.');
+    }
+
+    
+    atualizaBotaoProsseguir(); 
+});
+
+function atualizaBotaoProsseguir() {
+    
+}
+
+
+          
+        </script>
+
+
+
+        <!-- SOLICITAÇÃO DE FERIAS - CASO SIM (CONFIRMAR OS DADOS) -->
+        <div class="etapa" id="etapa4" style="display: none;">
+            <div class="confirmacao-container">
+                <h2 class="login-title">Confirme seus Dados</h2>
+                <div class="dados-container">
+                    <div class="form-group">
+                        <label for="nomeFuncionarioE4" class="form-label">Nome e Sobrenome:</label>
+                        <input id="nomeFuncionarioE4" class="confirmacao-input" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="matriculaFuncionario" class="form-label">Matrícula:</label>
+                        <input id="matriculaFuncionario" class="confirmacao-input" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="cargoFuncionario" class="form-label">Cargo:</label>
+                        <select id="cargoFuncionario" class="confirmacao-input">
+                            <option value="colaborador">Colaborador</option>
+                            <option value="gerente">Gerente</option>
+                            <!-- Adicione outras opções conforme necessário -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="periodoFerias" class="form-label">Período:</label>
+                        <span id="periodoFerias" class="confirmacao-input"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataFerias" class="form-label">Data selecionada:</label>
+                        <span id="dataFerias" class="confirmacao-input"></span>
+                    </div>
+                </div>
+                <div class="botoes-container">
+                    <button type="button" class="confirmacao-button" onclick="anterior()">VOLTAR</button>
+                    <button type="button" class="confirmacao-button" onclick="proximo()">PROSSEGUIR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOLICITAÇÃO DE FERIAS - CASO SIM (SOLICITAÇÃO ENVIADA) -->
+        <!-- Etapa 5 - Solicitação Enviada -->
+<div class="etapa" id="etapa5" style="display: none;">
+    <div class="login-container">
+        <h3 class="login-title">Solicitação enviada! <span id="nomeFuncionarioE5"></span>!</h3>
+        <div id="mensagem">
+            <p class="subtitle2">Sua solicitação de férias foi recebida com sucesso! Em <br> breve, você receberá uma confirmação por e-mail.<br> Qualquer dúvida estamos à disposição.</p>
+        </div>
+        <a class="Voltarmenu" href="/html/menu.html">VOLTAR AO MENU</a>
+    </div>
+</div>
+
+<script>
+    function enviarSolicitacaoFerias() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            const solicitacao = {
+                name: currentUser.name,
+                lastname: currentUser.lastname,
+                email: currentUser.email,
+                matricula: currentUser.matricula,
+                periodo: '1 mês', 
+                dataInicio: '2023-12-01', 
+                dataTermino: '2024-01-01', 
+                status: 'Pendente'
+            };
+
+            let solicitacoes = JSON.parse(localStorage.getItem('solicitacoesFerias')) || [];
+            solicitacoes.push(solicitacao);
+            localStorage.setItem('solicitacoesFerias', JSON.stringify(solicitacoes));
+            
+            preencherMensagemFinal();
+        } else {
+            alert('Erro: Não foi possível carregar os dados do usuário.');
+        }
+    }
+
+   
+    document.addEventListener('DOMContentLoaded', () => {
+        enviarSolicitacaoFerias();
+    });
+</script>
+
+        <!-- FOOTER DA PÁGINA -->
+        <footer> 
+            <div class="container footer-content">
+                <!-- Logo da empresa -->
+                <div class="company-logo">
+                    <img src="/src/accenture-logo-maior.png" alt="Logo da Accenture" width="266" height="191">
+                </div>
+                <!-- Navegação -->
+                <div class="footer-nav">
+                    <h3>Navegação</h3>
+                    <ul>
+                        <li><a href="/html/menu.html">Home</a></li>
+                        <li><a href="#">Sobre nós</a></li>
+                        <li><a href="#">Contatos</a></li>
+                    </ul>
+                    <h3>Serviços</h3>
+                    <ul>
+                        <li><a href="/html/formulario(ferias).html">Solicitar férias</a></li>
+                        <li><a href="#">Solicitar contra-cheque</a></li>
+                        <li><a href="#">Solicitar vale-transporte</a></li>
+                        <li><a href="#">Solicitar vale alimentação/refeição</a></li>
+                    </ul>
+                </div>
+                <!-- Links rápidos -->
+                <div class="quick-links">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="#">Contate-nos</a></li>
+                        <li><a href="#">Perguntas frequentes</a></li>
+                    </ul>
+                </div>
+                <!-- Redes sociais -->
+                <div class="social-media">
+                    <h3>Nossas Redes Sociais</h3>
+                    <ul>
+                        <li><a href="https://www.facebook.com/accenture/?locale=pt_BR"><img src="/src/facebook.png" alt="Facebook"></a></li>
+                        <li><a href="https://www.instagram.com/accenturebrasil/"><img src="/src/instagram.png" alt="Instagram"></a></li>
+                        <li><a href="https://www.linkedin.com/company/accenture/"><img src="/src/linkedln.png" alt="LinkedIn"></a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Linha de créditos -->
+            <div class="footer-line">
+                <p>@2024 Squad 04, Residencia 2024.1</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
